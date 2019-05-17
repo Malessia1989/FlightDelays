@@ -51,7 +51,17 @@ public class FlightDelaysController {
 
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
-
+    	
+    	String distanzaInput=distanzaMinima.getText();
+    	if(distanzaInput != null ) {
+    		if(model.isValid(distanzaInput)) {
+    			model.creaGrafo(Integer.parseInt(distanzaInput));
+    			txtResult.setText("Grafo creato!");
+    		}
+    	}
+    	
+    		
+    		
     }
 
     @FXML

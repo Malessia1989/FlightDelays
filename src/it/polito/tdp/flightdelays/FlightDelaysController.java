@@ -7,15 +7,19 @@
 package it.polito.tdp.flightdelays;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 /**
  * Sample Skeleton for 'FlightDelays.fxml' Controller Class
  */
@@ -41,10 +45,10 @@ public class FlightDelaysController {
     private Button btnAnalizza; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBoxAeroportoPartenza"
-    private ComboBox<String> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
+    private ComboBox<Airport> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBoxAeroportoArrivo"
-    private ComboBox<String> cmbBoxAeroportoArrivo; // Value injected by FXMLLoader
+    private ComboBox<Airport> cmbBoxAeroportoArrivo; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAeroportiConnessi"
     private Button btnAeroportiConnessi; // Value injected by FXMLLoader
@@ -52,21 +56,48 @@ public class FlightDelaysController {
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
     	
-    	String distanzaInput=distanzaMinima.getText();
-    	if(distanzaInput != null ) {
-    		if(model.isValid(distanzaInput)) {
-    			model.creaGrafo(Integer.parseInt(distanzaInput));
-    			txtResult.setText("Grafo creato!");
-    		}
+		String distanzaInput = distanzaMinima.getText();
+		if (distanzaInput != null && !distanzaInput.isEmpty()) {
+			if (model.isValid(distanzaInput)) {
+				model.creaGrafo(Integer.parseInt(distanzaInput));
+				txtResult.setText("Grafo creato!");
+
+			} else {
+				showAlert("Inserire un numero valido");
+
+			}
+		} else {
+			showAlert("Inserire una distanza minima");
+
+		}
+
+	}
+
+    private void showAlert(String message) {
+    	Alert alert = new Alert(AlertType.ERROR);
+		alert.setContentText(message);
+		alert.show();
+		
+	}
+
+	@FXML
+    void doTestConnessione(ActionEvent event) {
+		
+    	Airport a1=cmbBoxAeroportoArrivo.getValue();
+    	Airport a2=cmbBoxAeroportoPartenza.getValue();
+    	
+    	if(a1 != null || a2 != null) {
+    		txtResult.setText("Seleziona un aeroporto di partenza e di arrivo");     		
+    	}
+    	List<Airport> percorso=model.trovaPercorso(a1.getId(), a2.getId());
+    	
+    	if(percorso == null) {
+    		txtResult.setText("Aeroporti non connessi");
+    	}else {
+    		txtResult.setText("Aeroporti connessi connessi con percorso: " +percorso);
     	}
     	
-    		
-    		
-    }
-
-    @FXML
-    void doTestConnessione(ActionEvent event) {
-
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -82,6 +113,8 @@ public class FlightDelaysController {
     
     public void setModel(Model model) {
 		this.model = model;
+		cmbBoxAeroportoPartenza.getItems().addAll(model.getAirports());
+		cmbBoxAeroportoArrivo.getItems().addAll(model.getAirports());
 	}
 }
 

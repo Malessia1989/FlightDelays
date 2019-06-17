@@ -23,6 +23,7 @@ import it.polito.tdp.extflightdelays.db.ExtFlightDelaysDAO;
 public class Model {
 	
 	SimpleWeightedGraph<Airport,DefaultWeightedEdge> grafo;
+	
 	//idMap dove salvo aeroporti , la passo al metodo del dao per popolarla
 	Map<Integer,Airport> aIdMap;
 	
@@ -56,8 +57,10 @@ public class Model {
 
 			DefaultWeightedEdge edge = grafo.getEdge(rotta.getSource(), rotta.getDestination());
 			if (edge == null) {
+				
 				//se non esiste arco edge lo aggiungo
 				Graphs.addEdge(grafo, rotta.getSource(), rotta.getDestination(), rotta.getMediaDistanza());
+				
 				//altrimenti mi recupero il peso che avevo e lo aggiorno
 			} else {		
 				//System.out.println("aggiornare il peso!");
@@ -77,15 +80,17 @@ public class Model {
 	public boolean testConnessione (Integer a1, Integer a2) {
 		
 		//metodo che riceve i due id aeroporti , verifico se li ho visitati
+		
 		Set<Airport> visitati= new HashSet<Airport>();		
 		Airport partenza = aIdMap.get(a1);
 		Airport destinazione= aIdMap.get(a2);
 		System.out.println("Testo connessione tra " +partenza + " e" +destinazione);
 		
 		//visita in AMPIEZZA a partire da un nodo
-		BreadthFirstIterator<Airport, DefaultWeightedEdge> it= new BreadthFirstIterator<>(this.grafo, partenza);
-		//finchè itero aggiungo alla lista 
-		while(it.hasNext()) {
+		
+		BreadthFirstIterator<Airport, DefaultWeightedEdge> it= new BreadthFirstIterator<>(this.grafo, partenza);		
+		
+		while(it.hasNext()) {		//finchè itero aggiungo alla lista 
 			visitati.add(it.next());
 		}
 		//controllo se nel set c'è la destinazione
@@ -107,6 +112,7 @@ public class Model {
 		
 		//faccio la visita: iteratore e addTraversaListener
 		BreadthFirstIterator<Airport, DefaultWeightedEdge> it= new BreadthFirstIterator<>(this.grafo, partenza);
+		
 		//setto la partenza 
 		visita.put(partenza, null);
 		
@@ -154,7 +160,7 @@ public class Model {
 			}
 		});
 		
-		//faccio la visita
+		//faccio la visita		
 		while(it.hasNext())
 			it.next();
 		
@@ -163,13 +169,11 @@ public class Model {
 			return null;
 			
 			}
-		 
-		
 		
 		Airport step=destinazione;
 		while(!step.equals(partenza)) {
 			percorso.add(step);
-			step=visita.get(step);
+			step=visita.get(step);		//??
 		}
 		//aggiunge ultimo nodo
 		percorso.add(step);
